@@ -1,0 +1,1599 @@
+<style>
+    /* 基礎全局樣式 */
+    .wrapper {
+        max-width: 730px;
+        margin: 0 auto;
+    }
+
+    img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: relative;
+    }
+
+    .blank-space {
+        height: 60vh;
+    }
+
+    /* 視差相關樣式 */
+    .parallax__img-wrapper {
+        aspect-ratio: 4 / 5;
+        position: relative;
+        overflow: hidden;
+        perspective: 800px;
+    }
+
+    .parallax__img--full {
+        width: 100vw;
+        margin: 1rem 0rem;
+        margin-left: calc((100vw - 730px)/ 2 * -1);
+    }
+
+    .parallax__img--absolute {
+        position: absolute;
+        top: 0;
+    }
+
+    /* 保留舊類名兼容 */
+    .parallax_img-wrapper {
+        aspect-ratio: 4 / 5;
+        position: relative;
+        overflow: hidden;
+        perspective: 800px;
+    }
+
+    .is-abs {
+        position: absolute;
+        top: 0;
+    }
+
+    /* 面板共用樣式 */
+    .panel {
+        position: fixed;
+        left: 20px;
+        top: 20px;
+        background-color: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(8px);
+        padding: 15px;
+        border-radius: 5px;
+        z-index: 10000;
+        width: 300px;
+        font-family: 'Arial', sans-serif;
+        color: white;
+        height: auto;
+        max-height: calc(100vh - 80px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        transition: transform 0.3s ease-in-out;
+        /* 隱藏scrollbar但保持可滾動 */
+        scrollbar-width: none;
+        /* Firefox */
+        -ms-overflow-style: none;
+        /* IE and Edge */
+    }
+
+    /* 隱藏Chrome和Safari的scrollbar */
+    .panel::-webkit-scrollbar {
+        display: none;
+    }
+
+    .panel.hidden {
+        transform: translateX(-350px);
+    }
+
+    .panel__title {
+        margin-top: 0;
+        margin-bottom: 10px;
+        font-size: 18px;
+        text-align: center;
+    }
+
+    .panel__hint {
+        text-align: left;
+        margin-top: 10px;
+        font-size: 14px;
+    }
+
+    .panel__item {
+        margin-bottom: 15px;
+    }
+
+    .panel__label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+
+    .panel__value {
+        font-weight: bold;
+    }
+
+    .panel__slider {
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .panel__progress {
+        margin-bottom: 16px;
+        border-radius: 3px;
+    }
+
+    .panel__progress-label {
+        font-size: 16px;
+    }
+
+    /* 圖片管理面板特定樣式 */
+    .panel--image-manager {
+        top: 20px;
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+
+    /* 按鈕通用樣式 */
+    .btn {
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+        padding: 8px 12px;
+        font-size: 14px;
+    }
+
+    .btn--primary {
+        background-color: #4CAF50;
+        color: white;
+    }
+
+    .btn--danger {
+        background-color: #f44336;
+        color: white;
+    }
+
+    .btn--secondary {
+        background-color: #555;
+        color: white;
+    }
+
+    .btn--full {
+        width: 100%;
+    }
+
+    /* 按鈕容器 */
+    .btn-group {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    /* 圖片列表樣式 */
+    .image-list {
+        margin-top: 15px;
+    }
+
+    .image-item {
+        background-color: rgba(255, 255, 255, 0.1);
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 3px;
+        position: relative;
+    }
+
+    .image-item__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+
+    .image-item__name {
+        flex: 1;
+        margin-right: 10px;
+        font-weight: bold;
+    }
+
+    .image-item__controls {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    .image-item__z-index {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-right: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2px 5px;
+        border-radius: 3px;
+    }
+
+    .image-item__z-index-value {
+        color: white;
+        min-width: 20px;
+        text-align: center;
+    }
+
+    .image-item__url {
+        width: 100%;
+        margin-bottom: 8px;
+        padding: 5px;
+    }
+
+    /* 手風琴面板樣式 */
+    .accordion__header {
+        background-color: rgba(255, 255, 255, 0.1);
+        padding: 8px;
+        margin-top: 5px;
+        cursor: pointer;
+        border-radius: 3px;
+        user-select: none;
+    }
+
+    .accordion__content {
+        padding: 8px;
+        display: none;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 0 0 3px 3px;
+    }
+
+    .code-editor {
+        width: 100%;
+        height: 100px;
+        background-color: #1e1e1e;
+        color: #d4d4d4;
+        font-family: monospace;
+        padding: 8px;
+        margin-bottom: 8px;
+        border: 1px solid #333;
+        border-radius: 3px;
+    }
+
+    /* 箭頭按鈕樣式 */
+    .toggle-button {
+        position: fixed;
+        left: 310px;
+        top: 30px;
+        width: 30px;
+        height: 30px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        font-size: 16px;
+        font-family: Arial, sans-serif;
+    }
+
+    .toggle-button.hidden {
+        left: 10px;
+        transform: rotate(180deg);
+    }
+
+    /* 導出對話框樣式 */
+    .export-dialog {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        border-radius: 5px;
+        z-index: 10001;
+        max-width: 80%;
+        width: 500px;
+    }
+
+    .export-dialog h3 {
+        margin-top: 0;
+        background: #eee;
+        padding: 16px;
+        border-radius: 8px;
+        color: #111;
+    }
+
+    .export-dialog hr {
+        border: 1px solid #444;
+        margin: 15px 0;
+    }
+
+    .export-dialog h4 {
+        margin-top: 0;
+    }
+
+    .export-dialog code {
+        color: #ddd;
+    }
+
+    .export-dialog__code-block {
+        background: #333;
+        padding: 8px;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+
+    .export-dialog__tip {
+        background-color: #444;
+        padding: 10px;
+        border-radius: 4px;
+        margin: 10px 0;
+    }
+
+    .export-dialog__button-group {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin: 15px 0;
+    }
+
+    .export-dialog__template-button,
+    .export-dialog__close-button,
+    .export-dialog__download-button {
+        display: inline-block;
+        color: white;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        border: none;
+        cursor: pointer;
+        font-size: 14px;
+    }
+
+    .export-dialog__close-button {
+        background-color: #555;
+    }
+
+    .export-dialog__download-button {
+        background-color: #2196F3;
+    }
+
+    /* Switch 按鈕樣式 */
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 50px;
+        height: 24px;
+        margin: 5px 0;
+    }
+
+    .switch input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+    }
+
+    .switch-slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #555;
+        border-radius: 24px;
+        transition: 0.3s;
+    }
+
+    .switch-slider:before {
+        position: absolute;
+        content: "";
+        height: 20px;
+        width: 20px;
+        left: 2px;
+        bottom: 2px;
+        background-color: white;
+        border-radius: 50%;
+        transition: 0.3s;
+    }
+
+    input:checked+.switch-slider {
+        background-color: #4CAF50;
+    }
+
+    input:checked+.switch-slider:before {
+        transform: translateX(26px);
+    }
+
+    .switch-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+
+    .btn--small {
+        padding: 2px 6px;
+        font-size: 12px;
+        min-width: 20px;
+    }
+</style>
+
+<div class="wrapper">
+    <div class="blank-space"></div>
+    <div class="parallax_wrapper" id="parallax-1">
+        <div class="parallax_img-wrapper parallax__img-wrapper">
+            <img class="is-bg"
+                src="https://www.twreporter.org/images/20250409184447-4ec8004f3e32d67fe5bf5028777d575c-desktop.png"
+                alt="" />
+            <!-- 動態生成的圖片將被插入這裡 -->
+        </div>
+    </div>
+    <div class="blank-space"></div>
+    <div class="blank-space"></div>
+</div>
+
+<!-- 控制面板 -->
+<button id="toggle-panel" class="toggle-button">←</button>
+<div id="control-panel" class="panel">
+    <div id="scroll-progress" class="panel__progress">
+        <div class="panel__progress-label">滾動進度: <span id="progress-value" class="panel__value">0%</span></div>
+    </div>
+    <div class="panel__item">
+        <label class="panel__label">
+            scroller-start
+            <span id="start-value" class="panel__value">25%</span>
+        </label>
+        <input type="range" id="start-slider" class="panel__slider" min="0" max="100" value="25" step="1">
+    </div>
+    <div class="panel__item">
+        <label class="panel__label">
+            trigger-start
+            <span id="trigger-start-value" class="panel__value">0%</span>
+        </label>
+        <input type="range" id="trigger-start-slider" class="panel__slider" min="0" max="100" value="0" step="1">
+    </div>
+    <div class="panel__item">
+        <label class="panel__label">
+            滾動距離類型
+            <select id="scroll-distance-type" class="panel__select">
+                <option value="pixel">固定像素</option>
+                <option value="viewHeight">視窗高度百分比</option>
+                <option value="custom">自定義函數</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="panel__item" id="pixel-distance-container">
+        <label class="panel__label">
+            滾動距離 (像素)
+            <span id="scroll-distance-value" class="panel__value">500</span>
+        </label>
+        <input type="range" id="scroll-distance-slider" class="panel__slider" min="100" max="2000" value="500"
+            step="50">
+    </div>
+
+    <div class="panel__item" id="viewheight-distance-container" style="display:none;">
+        <label class="panel__label">
+            滾動距離 (視窗高度%)
+            <span id="scroll-viewheight-value" class="panel__value">50</span>
+        </label>
+        <input type="range" id="scroll-viewheight-slider" class="panel__slider" min="10" max="200" value="50" step="5">
+    </div>
+
+    <div class="panel__item" id="custom-distance-container" style="display:none;">
+        <label class="panel__label">
+            自定義滾動函數
+        </label>
+        <textarea id="scroll-custom-code" class="code-editor">() => "+=" + (window.innerHeight * 0.5)</textarea>
+        <div class="panel__hint">函數必須返回有效的ScrollTrigger end值</div>
+    </div>
+    <div class="panel__item">
+        <label class="switch-label">
+            顯示標記
+            <label class="switch">
+                <input type="checkbox" id="markers-toggle" checked>
+                <span class="switch-slider"></span>
+            </label>
+        </label>
+    </div>
+    <div class="panel__item">
+        <button id="reset-settings" class="btn btn--danger btn--full">重置滾動設定</button>
+    </div>
+    <hr style="border: 1px solid rgba(255, 255, 255, 0.2); margin: 15px 0;">
+    <div class="btn-group">
+        <button id="add-image" class="btn btn--primary btn--full">新增圖片</button>
+        <button id="reset-images" class="btn btn--danger btn--full">重置圖片</button>
+        <button id="export-config" class="btn btn--secondary btn--full">複製json</button>
+    </div>
+    <div class="panel__hint" style="margin-bottom: 10px;">
+        1. 複製從工具導出的JSON配置<br>
+        2. 下載模板文件，並在標記區域中替換配置數據<br>
+        3. 將修改後的模板代碼嵌入到您的CMS中
+    </div>
+    <div id="image-list" class="image-list">
+        <!-- 動態生成的圖片項目將被插入這裡 -->
+    </div>
+</div>
+
+<!-- 導出對話框模板 -->
+<div id="export-dialog" class="export-dialog" style="display: none;">
+    <h3>已複製JSON到剪貼簿</h3>
+    <p>點擊下方按鈕下載配置文件</p>
+    <hr>
+    <h4>如何使用配置</h4>
+    <p>1. 下載模板文件 <a href="parallax_template.html" style="color: #4CAF50;" download>parallax_template.html</a></p>
+    <p>2. 用文本編輯器打開模板文件，找到以下標記區域：</p>
+    <div class="export-dialog__code-block">
+        <code>// === 開始：配置數據（請勿修改此行） ===<br>const config = { ... };<br>// === 結束：配置數據（請勿修改此行） ===</code>
+    </div>
+    <p>3. 將剪貼簿中的JSON替換整個config對象</p>
+    <p>4. 將修改後的模板代碼嵌入到您的CMS中</p>
+    <p class="export-dialog__tip"><strong>📌新功能</strong>: 每個視差模組現在包含唯一ID，可以在同一頁面嵌入多個模組互不干擾!</p>
+    <div class="export-dialog__button-group">
+        <button class="export-dialog__download-button">下載json</button>
+        <button class="export-dialog__close-button">關閉</button>
+    </div>
+</div>
+
+<script type="module">
+    import { gsap } from 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/+esm';
+    import { ScrollTrigger } from 'https://cdn.jsdelivr.net/npm/gsap@3.12.7/ScrollTrigger.js/+esm';
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    // 轉換URL為各種尺寸版本的函數
+    function generateSrcSet(url) {
+        // 檢查URL是否為空或無效
+        if (!url || typeof url !== 'string') {
+            return { src: url, srcset: '' };
+        }
+
+        // 檢查URL是否已經包含尺寸後綴
+        const sizePatterns = ['-tiny', '-w400', '-tablet', '-mobile', '-desktop'];
+        let baseUrl = '';
+        let detectedPattern = '';
+        let fileExtension = '.jpg'; // 默認擴展名
+
+        // 獲取文件擴展名
+        if (url.toLowerCase().endsWith('.png')) {
+            fileExtension = '.png';
+        } else if (url.toLowerCase().endsWith('.jpg') || url.toLowerCase().endsWith('.jpeg')) {
+            fileExtension = '.jpg';
+        }
+
+        // 查找URL中包含的尺寸後綴
+        for (const pattern of sizePatterns) {
+            if (url.includes(pattern)) {
+                // 從URL中提取基本路徑（不包含尺寸後綴和文件擴展名）
+                baseUrl = url.substring(0, url.lastIndexOf(pattern));
+                detectedPattern = pattern;
+                break;
+            }
+        }
+
+        // 如果沒有找到尺寸後綴，返回原始URL
+        if (!detectedPattern) {
+            return { src: url, srcset: '' };
+        }
+
+        // 生成不同大小的URL和寬度組合
+        const srcset = [
+            `${baseUrl}-mobile${fileExtension} 800w`,
+            `${baseUrl}-tablet${fileExtension} 1200w`,
+            `${baseUrl}-desktop${fileExtension} 2000w`,
+            `${baseUrl}-tiny${fileExtension} 150w`
+        ].join(', ');
+
+        // 默認顯示的圖片，根據設備類型選擇
+        const defaultSrc = `${baseUrl}-mobile${fileExtension}`;
+
+        return { src: defaultSrc, srcset };
+    }
+
+    // 本地儲存的鍵名
+    const STORAGE_KEY = 'gsap_scroll_config';
+    const IMAGES_STORAGE_KEY = 'gsap_images_config';
+
+    // 獲取DOM元素
+    const controlPanel = document.getElementById('control-panel');
+    const toggleButton = document.getElementById('toggle-panel');
+    const startSlider = document.getElementById('start-slider');
+    const startValue = document.getElementById('start-value');
+    const triggerStartSlider = document.getElementById('trigger-start-slider');
+    const triggerStartValue = document.getElementById('trigger-start-value');
+    const scrollDistanceSlider = document.getElementById('scroll-distance-slider');
+    const scrollDistanceValue = document.getElementById('scroll-distance-value');
+    const progressValue = document.getElementById('progress-value');
+    const resetButton = document.getElementById('reset-settings');
+    const addImageButton = document.getElementById('add-image');
+    const resetImagesButton = document.getElementById('reset-images');
+    const exportConfigButton = document.getElementById('export-config');
+    const imageList = document.getElementById('image-list');
+
+    // 控制面板和markers及圖片管理器的顯示狀態
+    const MARKERS_STORAGE_KEY = 'gsap_markers_visible';
+    const IMAGE_MANAGER_STORAGE_KEY = 'gsap_image_manager_visible';
+
+    // 從localStorage獲取保存的顯示狀態，預設為true（顯示）
+    let SHOW_MARKERS = localStorage.getItem(MARKERS_STORAGE_KEY) === 'true' || true;
+    let controlPanelVisible = true; // 始終顯示控制面板
+    let imageManagerVisible = true; // 始終顯示圖片管理器
+
+    // 關鍵詞輸入
+    let keyBuffer = '';
+    let lastKeyTime = 0;
+    const KEY_TIMEOUT = 3000; // 3秒超時
+    const HIDE_SCROLL_KEYWORD = 'hidescroll';
+    const HIDE_IMAGE_KEYWORD = 'hideimage';
+
+    // 控制scrolltrigger的配置
+    const SCROLL_CONFIG = loadScrollConfig();
+
+    // 存儲圖片配置的數組
+    let IMAGES_CONFIG = loadImagesConfig();
+    let imageIdCounter = getNextImageId();
+
+    // 從本地儲存加載設定，如果沒有則使用默認值
+    function loadScrollConfig() {
+        try {
+            const savedConfig = localStorage.getItem(STORAGE_KEY);
+            return savedConfig ? JSON.parse(savedConfig) : getDefaultConfig();
+        } catch (error) {
+            console.error('Error loading saved config:', error);
+            return getDefaultConfig();
+        }
+    }
+
+    // 從本地儲存加載圖片配置
+    function loadImagesConfig() {
+        try {
+            const savedConfig = localStorage.getItem(IMAGES_STORAGE_KEY);
+            return savedConfig ? JSON.parse(savedConfig) : getDefaultImagesConfig();
+        } catch (error) {
+            console.error('Error loading saved images config:', error);
+            return getDefaultImagesConfig();
+        }
+    }
+
+    // 獲取下一個可用的圖片ID
+    function getNextImageId() {
+        if (IMAGES_CONFIG.length === 0) return 1;
+        // 找出最大ID並加1
+        return Math.max(...IMAGES_CONFIG.map(img => img.id)) + 1;
+    }
+
+    // 獲取默認配置
+    function getDefaultConfig() {
+        return {
+            startViewportPosition: 0.25, // 視窗頂部 25% 的位置
+            triggerStartPosition: 0,     // 觸發器上緣 0% 的位置
+            scrollDistance: 500,         // 滾動距離，單位為像素
+            scrollDistanceType: 'pixel', // 新增：距離類型 (pixel, viewHeight, custom)
+            scrollViewHeightValue: 50,   // 新增：視窗高度百分比值
+            scrollDistanceCustom: '() => "+=" + (window.innerHeight * 0.5)' // 新增：自定義函數
+        };
+    }
+
+    // 獲取默認圖片配置
+    function getDefaultImagesConfig() {
+        return [
+            {
+                id: 0,  // 使用ID 0表示背景圖
+                name: "背景圖",
+                url: "https://www.twreporter.org/images/20250409184447-4ec8004f3e32d67fe5bf5028777d575c-desktop.png",
+                isBackground: true,  // 標記為背景圖
+                zIndex: 1
+            },
+            {
+                id: 1,
+                name: "煙霧",
+                url: "https://www.twreporter.org/images/20250409184056-1a0014ac9d41865fca76ccc420c1383e-desktop.png",
+                fromParams: `{
+  scale: 1.25,
+  transformOrigin: "50% bottom"
+}`,
+                toParams: `{
+  scale: 1,
+  transformOrigin: "50% bottom"
+}`,
+                zIndex: 2
+            },
+            {
+                id: 2,
+                name: "手部",
+                url: "https://www.twreporter.org/images/20250409184322-70971186e62ef80444851b62fe85a75f-desktop.png",
+                fromParams: `{
+  x: "5%",
+  transformOrigin: "75% 50%"
+}`,
+                toParams: `{
+  x: 0,
+  transformOrigin: "70% 50%"
+}`,
+                zIndex: 3
+            },
+            {
+                id: 3,
+                name: "文字",
+                url: "https://www.twreporter.org/images/20250409184351-57c9c8821c301f1b6af70ae8ae020c2a-desktop.png",
+                fromParams: `{
+  scale: 0.5,
+  opacity: 0,
+  transformOrigin: "10% 25%"
+}`,
+                toParams: `{
+  scale: 1,
+  opacity: 1
+}`,
+                zIndex: 4
+            },
+            {
+                id: 4,
+                name: "外框",
+                url: "https://www.twreporter.org/images/20250409184416-190075b6600cb5bf9bbd8372ea9dd805-desktop.png",
+                fromParams: `{}`,
+                toParams: `{}`,
+                zIndex: 5
+            }
+        ];
+    }
+
+    // 儲存設定到本地儲存
+    function saveScrollConfig() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(SCROLL_CONFIG));
+            console.log('Settings saved:', SCROLL_CONFIG);
+        } catch (error) {
+            console.error('Error saving config:', error);
+        }
+    }
+
+    // 儲存圖片配置到本地儲存
+    function saveImagesConfig() {
+        try {
+            localStorage.setItem(IMAGES_STORAGE_KEY, JSON.stringify(IMAGES_CONFIG));
+            console.log('Images config saved:', IMAGES_CONFIG);
+        } catch (error) {
+            console.error('Error saving images config:', error);
+        }
+    }
+
+    // 初始化滑塊值
+    function initializeSliders() {
+        startSlider.value = SCROLL_CONFIG.startViewportPosition * 100;
+        triggerStartSlider.value = SCROLL_CONFIG.triggerStartPosition * 100;
+        scrollDistanceSlider.value = SCROLL_CONFIG.scrollDistance;
+
+        // 初始化滾動距離類型控制項
+        const distanceTypeSelect = document.getElementById('scroll-distance-type');
+        const viewHeightSlider = document.getElementById('scroll-viewheight-slider');
+        const viewHeightValue = document.getElementById('scroll-viewheight-value');
+        const customCodeInput = document.getElementById('scroll-custom-code');
+
+        if (distanceTypeSelect) {
+            distanceTypeSelect.value = SCROLL_CONFIG.scrollDistanceType;
+            viewHeightSlider.value = SCROLL_CONFIG.scrollViewHeightValue;
+            viewHeightValue.textContent = SCROLL_CONFIG.scrollViewHeightValue;
+            customCodeInput.value = SCROLL_CONFIG.scrollDistanceCustom;
+
+            // 更新UI顯示
+            updateDistanceTypeUI(SCROLL_CONFIG.scrollDistanceType);
+        }
+
+        updateSliderLabels();
+    }
+
+    // 更新滑塊標籤
+    function updateSliderLabels() {
+        startValue.textContent = `${Math.round(SCROLL_CONFIG.startViewportPosition * 100)}%`;
+        triggerStartValue.textContent = `${Math.round(SCROLL_CONFIG.triggerStartPosition * 100)}%`;
+        scrollDistanceValue.textContent = `${SCROLL_CONFIG.scrollDistance}`;
+    }
+
+    // 顯示/隱藏不同類型的控制項
+    function updateDistanceTypeUI(type) {
+        const pixelContainer = document.getElementById('pixel-distance-container');
+        const viewHeightContainer = document.getElementById('viewheight-distance-container');
+        const customContainer = document.getElementById('custom-distance-container');
+
+        if (!pixelContainer || !viewHeightContainer || !customContainer) return;
+
+        // 隱藏所有容器
+        pixelContainer.style.display = 'none';
+        viewHeightContainer.style.display = 'none';
+        customContainer.style.display = 'none';
+
+        // 顯示對應類型的容器
+        switch (type) {
+            case 'pixel':
+                pixelContainer.style.display = 'block';
+                break;
+            case 'viewHeight':
+                viewHeightContainer.style.display = 'block';
+                break;
+            case 'custom':
+                customContainer.style.display = 'block';
+                break;
+        }
+    }
+
+    // 切換markers顯示狀態的函數
+    function toggleMarkers() {
+        SHOW_MARKERS = !SHOW_MARKERS;
+        localStorage.setItem(MARKERS_STORAGE_KEY, SHOW_MARKERS);
+
+        // 更新所有 ScrollTrigger 的 markers 狀態
+        ScrollTrigger.getAll().forEach(trigger => {
+            trigger.vars.markers = SHOW_MARKERS;
+            // 強制更新 ScrollTrigger 實例
+            trigger.refresh();
+        });
+    }
+
+    // 切換圖片管理器顯示狀態
+    function toggleImageManager() {
+        // 這個函數現在只保留，但實際上不會被調用
+        console.log('toggleImageManager 函數已棄用');
+    }
+
+    // 添加新圖片
+    function addImage() {
+        const newImageConfig = {
+            id: imageIdCounter++,
+            name: `圖片 ${imageIdCounter - 1}`,
+            url: "",
+            fromParams: `{}`,
+            toParams: `{}`,
+            zIndex: 1  // 設置默認z-index值
+        };
+
+        IMAGES_CONFIG.push(newImageConfig);
+        saveImagesConfig();
+        renderImageItems();
+        updateAnimations();
+    }
+
+    // 删除图片
+    function deleteImage(id) {
+        // 先找到要刪除的圖片配置
+        const imageToDelete = IMAGES_CONFIG.find(img => img.id === id);
+        if (!imageToDelete) return;
+
+        // 從DOM中移除圖片元素
+        const imgElement = document.getElementById(`gsap-trigger-${id}`);
+        if (imgElement) {
+            imgElement.remove();
+        }
+
+        // 從配置中移除圖片
+        IMAGES_CONFIG = IMAGES_CONFIG.filter(img => img.id !== id);
+        saveImagesConfig();
+
+        // 重新渲染圖片列表
+        renderImageItems();
+
+        // 重新創建動畫
+        updateAnimations();
+    }
+
+    // 更新圖片URL
+    function updateImageUrl(id, url) {
+        console.log('更新前景圖片URL:', id, url);
+        const image = IMAGES_CONFIG.find(img => img.id === id);
+        if (image) {
+            image.url = url;
+            saveImagesConfig();
+
+            // 直接更新DOM中的圖片元素
+            const imgElement = document.getElementById(`gsap-trigger-${id}`);
+            if (imgElement) {
+                const { src, srcset } = generateSrcSet(url);
+                imgElement.src = src;
+
+                if (srcset) {
+                    imgElement.srcset = srcset;
+                    imgElement.sizes = "(max-width: 800px) 800px, (max-width: 1200px) 1200px, 2000px";
+                }
+            } else {
+                // 如果找不到圖片元素，可能需要重新載入所有圖片
+                loadAllImages();
+            }
+
+            // 重新創建動畫
+            updateAnimations();
+        }
+    }
+
+    // 更新圖片名稱
+    function updateImageName(id, name) {
+        const image = IMAGES_CONFIG.find(img => img.id === id);
+        if (image) {
+            image.name = name;
+            saveImagesConfig();
+            renderImageItems();
+        }
+    }
+
+    // 更新圖片From參數
+    function updateImageFromParams(id, params) {
+        const image = IMAGES_CONFIG.find(img => img.id === id);
+        if (image) {
+            image.fromParams = params;
+            saveImagesConfig();
+            updateAnimations();
+        }
+    }
+
+    // 更新圖片To參數
+    function updateImageToParams(id, params) {
+        const image = IMAGES_CONFIG.find(img => img.id === id);
+        if (image) {
+            image.toParams = params;
+            saveImagesConfig();
+            updateAnimations();
+        }
+    }
+
+    // 更新圖片z-index
+    function updateImageZIndex(id, increment) {
+        const image = IMAGES_CONFIG.find(img => img.id === id);
+        if (image) {
+            // 確保當前的zIndex是數字，如果不是則設為1
+            if (typeof image.zIndex !== 'number' || isNaN(image.zIndex)) {
+                image.zIndex = 1;
+            }
+
+            // 計算新的z-index值
+            image.zIndex = Math.max(1, image.zIndex + increment);
+
+            saveImagesConfig();
+
+            // 更新DOM元素的z-index
+            if (image.isBackground) {
+                const bgElement = document.querySelector('.parallax_img-wrapper .is-bg');
+                if (bgElement) {
+                    bgElement.style.zIndex = image.zIndex;
+                }
+            } else {
+                const imgElement = document.getElementById(`gsap-trigger-${id}`);
+                if (imgElement) {
+                    imgElement.style.zIndex = image.zIndex;
+                }
+            }
+
+            renderImageItems();
+        }
+    }
+
+    // 渲染圖片項目列表
+    function renderImageItems() {
+        imageList.innerHTML = '';
+
+        IMAGES_CONFIG.forEach(image => {
+            const imageItem = document.createElement('div');
+            imageItem.className = 'image-item';
+            imageItem.dataset.id = image.id;
+
+            const imageItemHeader = document.createElement('div');
+            imageItemHeader.className = 'image-item__header';
+
+            const nameInput = document.createElement('input');
+            nameInput.type = 'text';
+            nameInput.value = image.name;
+            nameInput.className = 'image-item__name';
+            // 如果是背景圖，禁用名稱修改
+            if (image.isBackground) {
+                nameInput.readOnly = true;
+                nameInput.style.opacity = "0.7";
+            } else {
+                nameInput.addEventListener('change', (e) => updateImageName(image.id, e.target.value));
+            }
+
+            imageItemHeader.appendChild(nameInput);
+
+            // 添加z-index控制器
+            const zIndexControl = document.createElement('div');
+            zIndexControl.className = 'image-item__z-index';
+
+            const decreaseButton = document.createElement('button');
+            decreaseButton.className = 'btn btn--small';
+            decreaseButton.textContent = '-';
+            decreaseButton.addEventListener('click', () => updateImageZIndex(image.id, -1));
+
+            const zIndexValue = document.createElement('span');
+            zIndexValue.className = 'image-item__z-index-value';
+            // 確保顯示的z-index值是有效的數字
+            zIndexValue.textContent = typeof image.zIndex === 'number' ? image.zIndex : 1;
+
+            const increaseButton = document.createElement('button');
+            increaseButton.className = 'btn btn--small';
+            increaseButton.textContent = '+';
+            increaseButton.addEventListener('click', () => updateImageZIndex(image.id, 1));
+
+            zIndexControl.appendChild(decreaseButton);
+            zIndexControl.appendChild(zIndexValue);
+            zIndexControl.appendChild(increaseButton);
+
+            imageItemHeader.appendChild(zIndexControl);
+
+            // 只為非背景圖添加刪除按鈕
+            if (!image.isBackground) {
+                const deleteButton = document.createElement('button');
+                deleteButton.className = 'btn btn--danger';
+                deleteButton.textContent = '刪除';
+                deleteButton.style.fontSize = '12px';
+                deleteButton.style.padding = '3px 6px';
+                deleteButton.addEventListener('click', () => deleteImage(image.id));
+                imageItemHeader.appendChild(deleteButton);
+            }
+
+            const urlInput = document.createElement('input');
+            urlInput.type = 'text';
+            urlInput.className = 'image-item__url';
+            urlInput.placeholder = '請輸入圖片URL';
+            urlInput.value = image.url;
+
+            // 為所有圖片添加URL修改功能
+            if (image.isBackground) {
+                urlInput.addEventListener('change', (e) => updateBackgroundImageUrl(e.target.value));
+            } else {
+                urlInput.addEventListener('change', (e) => updateImageUrl(image.id, e.target.value));
+            }
+
+            imageItem.appendChild(imageItemHeader);
+            imageItem.appendChild(urlInput);
+
+            // 只為非背景圖添加動畫參數配置
+            if (!image.isBackground) {
+                // From參數折疊面板
+                const fromHeader = document.createElement('div');
+                fromHeader.className = 'accordion__header';
+                fromHeader.textContent = 'From動畫參數';
+                fromHeader.addEventListener('click', toggleAccordion);
+
+                const fromContent = document.createElement('div');
+                fromContent.className = 'accordion__content';
+
+                const fromTextarea = document.createElement('textarea');
+                fromTextarea.className = 'code-editor';
+                fromTextarea.value = image.fromParams;
+                fromTextarea.addEventListener('change', (e) => updateImageFromParams(image.id, e.target.value));
+
+                fromContent.appendChild(fromTextarea);
+
+                // To參數折疊面板
+                const toHeader = document.createElement('div');
+                toHeader.className = 'accordion__header';
+                toHeader.textContent = 'To動畫參數';
+                toHeader.addEventListener('click', toggleAccordion);
+
+                const toContent = document.createElement('div');
+                toContent.className = 'accordion__content';
+
+                const toTextarea = document.createElement('textarea');
+                toTextarea.className = 'code-editor';
+                toTextarea.value = image.toParams;
+                toTextarea.addEventListener('change', (e) => updateImageToParams(image.id, e.target.value));
+
+                toContent.appendChild(toTextarea);
+
+                imageItem.appendChild(fromHeader);
+                imageItem.appendChild(fromContent);
+                imageItem.appendChild(toHeader);
+                imageItem.appendChild(toContent);
+            }
+
+            imageList.appendChild(imageItem);
+        });
+    }
+
+    // 切換折疊面板
+    function toggleAccordion(e) {
+        const content = e.target.nextElementSibling;
+        content.style.display = content.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // 重置設定為默認值
+    resetButton.addEventListener('click', function () {
+        localStorage.removeItem(STORAGE_KEY);
+        Object.assign(SCROLL_CONFIG, getDefaultConfig());
+        initializeSliders();
+        updateAnimations();
+        console.log('設定已重置為默認值');
+    });
+
+    // 重置圖片設定為默認值
+    function resetImages() {
+        if (confirm('確定要重置所有圖片設定嗎？此操作將刪除您所有的自定義圖片設定。')) {
+            localStorage.removeItem(IMAGES_STORAGE_KEY);
+            IMAGES_CONFIG = getDefaultImagesConfig();
+            imageIdCounter = getNextImageId();
+            renderImageItems();
+            updateAnimations();
+            console.log('圖片設定已重置為默認值');
+        }
+    }
+
+    // 設置滑塊值變化監聽器
+    function setupSliderListeners() {
+        // 現有的滑塊監聽器保持不變
+        startSlider.addEventListener('input', event => {
+            SCROLL_CONFIG.startViewportPosition = event.target.value / 100;
+            updateSliderLabels();
+            saveScrollConfig();
+            updateAnimations();
+        });
+
+        triggerStartSlider.addEventListener('input', event => {
+            SCROLL_CONFIG.triggerStartPosition = event.target.value / 100;
+            updateSliderLabels();
+            saveScrollConfig();
+            updateAnimations();
+        });
+
+        scrollDistanceSlider.addEventListener('input', event => {
+            SCROLL_CONFIG.scrollDistance = parseInt(event.target.value);
+            updateSliderLabels();
+            saveScrollConfig();
+            updateAnimations();
+        });
+
+        // 新增：滾動距離類型選擇器
+        const distanceTypeSelect = document.getElementById('scroll-distance-type');
+        const pixelContainer = document.getElementById('pixel-distance-container');
+        const viewHeightContainer = document.getElementById('viewheight-distance-container');
+        const customContainer = document.getElementById('custom-distance-container');
+        const viewHeightSlider = document.getElementById('scroll-viewheight-slider');
+        const viewHeightValue = document.getElementById('scroll-viewheight-value');
+        const customCodeInput = document.getElementById('scroll-custom-code');
+
+        // 設置初始值
+        distanceTypeSelect.value = SCROLL_CONFIG.scrollDistanceType;
+        viewHeightSlider.value = SCROLL_CONFIG.scrollViewHeightValue;
+        viewHeightValue.textContent = SCROLL_CONFIG.scrollViewHeightValue;
+        customCodeInput.value = SCROLL_CONFIG.scrollDistanceCustom;
+
+        // 根據當前類型顯示相應的控制項
+        updateDistanceTypeUI(SCROLL_CONFIG.scrollDistanceType);
+
+        // 監聽類型變更
+        distanceTypeSelect.addEventListener('change', (e) => {
+            const newType = e.target.value;
+            SCROLL_CONFIG.scrollDistanceType = newType;
+            updateDistanceTypeUI(newType);
+            saveScrollConfig();
+            updateAnimations();
+        });
+
+        // 視窗高度百分比滑塊
+        viewHeightSlider.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            SCROLL_CONFIG.scrollViewHeightValue = value;
+            viewHeightValue.textContent = value;
+            saveScrollConfig();
+            updateAnimations();
+        });
+
+        // 自定義函數輸入框
+        customCodeInput.addEventListener('change', (e) => {
+            SCROLL_CONFIG.scrollDistanceCustom = e.target.value;
+            saveScrollConfig();
+            updateAnimations();
+        });
+
+        // markers 切換按鈕
+        document.getElementById('markers-toggle').addEventListener('change', function () {
+            toggleMarkers();
+            updateAnimations();
+        });
+
+        // 重置按鈕
+        resetButton.addEventListener('click', () => {
+            if (confirm('確定要重置所有滾動設定嗎？此操作不可逆。')) {
+                SCROLL_CONFIG = getDefaultConfig();
+                saveScrollConfig();
+                initializeSliders();
+
+                // 更新距離類型UI
+                distanceTypeSelect.value = SCROLL_CONFIG.scrollDistanceType;
+                viewHeightSlider.value = SCROLL_CONFIG.scrollViewHeightValue;
+                viewHeightValue.textContent = SCROLL_CONFIG.scrollViewHeightValue;
+                customCodeInput.value = SCROLL_CONFIG.scrollDistanceCustom;
+                updateDistanceTypeUI(SCROLL_CONFIG.scrollDistanceType);
+
+                updateAnimations();
+            }
+        });
+
+        // 新增圖片按鈕
+        addImageButton.addEventListener('click', addImage);
+
+        // 重置圖片按鈕
+        resetImagesButton.addEventListener('click', () => {
+            if (confirm('確定要重置所有圖片設定嗎？此操作不可逆。')) {
+                IMAGES_CONFIG = getDefaultImagesConfig();
+                saveImagesConfig();
+                renderImageItems();
+                loadAllImages();
+                updateAnimations();
+            }
+        });
+
+        // 導出配置按鈕
+        exportConfigButton.addEventListener('click', exportConfig);
+    }
+
+    // 初始化應用程序
+    function init() {
+        console.log('初始化開始');
+        console.log('markers顯示狀態:', SHOW_MARKERS);
+
+        // 確保所有圖片都有有效的z-index值
+        IMAGES_CONFIG.forEach(image => {
+            if (typeof image.zIndex !== 'number' || isNaN(image.zIndex)) {
+                image.zIndex = 1;
+            }
+        });
+        saveImagesConfig();
+
+        // 初始化滑塊
+        initializeSliders();
+
+        // 設置事件監聽器
+        setupSliderListeners();
+
+        // 渲染圖片項目列表
+        renderImageItems();
+
+        // 強制清除和重新加載所有圖片
+        loadAllImages();
+
+        // 更新動畫
+        updateAnimations();
+
+        console.log('初始化完成: markers顯示狀態=', SHOW_MARKERS);
+    }
+
+    // 載入所有圖片的輔助函數
+    function loadAllImages() {
+        try {
+            const parallaxWrapper = document.querySelector(".parallax_img-wrapper");
+            if (!parallaxWrapper) {
+                console.error('找不到圖片容器元素!');
+                return;
+            }
+
+            // 1. 檢查並獲取背景圖元素
+            let bgImageElement = parallaxWrapper.querySelector(".is-bg");
+
+            // 找到配置中的背景圖
+            const bgImageConfig = IMAGES_CONFIG.find(img => img.isBackground);
+
+            // 如果找到背景圖配置但DOM中沒有背景圖元素，創建一個
+            if (bgImageConfig && !bgImageElement) {
+                bgImageElement = document.createElement("img");
+                bgImageElement.className = "is-bg";
+                bgImageElement.alt = bgImageConfig.name;
+                parallaxWrapper.appendChild(bgImageElement);
+            }
+
+            // 更新背景圖URL和z-index
+            if (bgImageElement && bgImageConfig) {
+                const { src, srcset } = generateSrcSet(bgImageConfig.url);
+                bgImageElement.src = src;
+
+                if (srcset) {
+                    bgImageElement.srcset = srcset;
+                    bgImageElement.sizes = "(max-width: 800px) 800px, (max-width: 1200px) 1200px, 2000px";
+                }
+
+                bgImageElement.style.zIndex = bgImageConfig.zIndex;
+            }
+
+            // 2. 清除所有現有前景圖片（保留背景圖）
+            Array.from(parallaxWrapper.querySelectorAll(".is-abs, .parallax__img--absolute")).forEach(img => {
+                if (!img.classList.contains('is-bg')) {
+                    img.remove();
+                }
+            });
+
+            // 3. 檢查是否有圖片配置
+            if (IMAGES_CONFIG.filter(img => !img.isBackground).length === 0) {
+                console.warn('沒有前景圖片配置，加載默認圖片');
+                // 保留背景圖配置，添加默認前景圖
+                if (bgImageConfig) {
+                    const defaultImages = getDefaultImagesConfig().filter(img => !img.isBackground);
+                    IMAGES_CONFIG = [bgImageConfig, ...defaultImages];
+                } else {
+                    IMAGES_CONFIG = getDefaultImagesConfig();
+                }
+                saveImagesConfig();
+            }
+
+            // 4. 創建所有前景圖片元素
+            IMAGES_CONFIG.forEach((config, index) => {
+                // 跳過背景圖和無URL的圖片
+                if (config.isBackground || !config.url) {
+                    return;
+                }
+
+                console.log(`添加前景圖片 #${index}: ${config.name}`);
+
+                const { src, srcset } = generateSrcSet(config.url);
+
+                const img = document.createElement("img");
+                img.className = "is-abs parallax__img--absolute";
+                img.id = `gsap-trigger-${config.id}`;
+                img.src = src;
+
+                if (srcset) {
+                    img.srcset = srcset;
+                    img.sizes = "(max-width: 800px) 800px, (max-width: 1200px) 1200px, 2000px";
+                }
+
+                img.alt = config.name;
+                img.style.zIndex = config.zIndex;
+                parallaxWrapper.appendChild(img);
+            });
+
+            console.log(`成功加載 ${IMAGES_CONFIG.length} 張圖片（包含背景圖）`);
+        } catch (error) {
+            console.error('加載圖片時出錯:', error);
+        }
+    }
+
+    // 更新所有動畫的函數
+    function updateAnimations() {
+        console.log('開始更新動畫, markers顯示狀態:', SHOW_MARKERS);
+
+        // 清除現有的ScrollTrigger實例
+        ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+
+        // 獲取設置參數
+        const viewportStart = `${Math.round(SCROLL_CONFIG.startViewportPosition * 100)}%`;
+        const triggerStart = `${Math.round(SCROLL_CONFIG.triggerStartPosition * 100)}%`;
+        const scrollDistance = SCROLL_CONFIG.scrollDistance;
+
+        // 設置起始位置
+        const startPos = `${triggerStart} ${viewportStart}`;
+
+        // 根據滾動距離類型設置不同的結束位置
+        let endPos;
+
+        switch (SCROLL_CONFIG.scrollDistanceType) {
+            case 'pixel':
+                endPos = `+=${scrollDistance}`;
+                break;
+            case 'viewHeight':
+                // 使用視窗高度的百分比
+                const viewHeightValue = SCROLL_CONFIG.scrollViewHeightValue / 100;
+                endPos = `+=${window.innerHeight * viewHeightValue}`;
+                break;
+            case 'custom':
+                try {
+                    // 執行自定義函數
+                    const customFunction = new Function('return ' + SCROLL_CONFIG.scrollDistanceCustom)();
+                    endPos = customFunction();
+                } catch (error) {
+                    console.error('自定義滾動距離函數錯誤:', error);
+                    // 發生錯誤時使用默認值
+                    endPos = `+=500`;
+                }
+                break;
+            default:
+                endPos = `+=${scrollDistance}`;
+        }
+
+        // 記錄配置信息
+        console.log('動畫設定：', {
+            起始位置: startPos,
+            結束位置: endPos,
+            滾動距離類型: SCROLL_CONFIG.scrollDistanceType,
+            視窗高度: `${window.innerHeight}px`,
+            markers顯示: SHOW_MARKERS
+        });
+
+        // 重置進度信息
+        progressValue.textContent = '0%';
+
+        // 創建主ScrollTrigger實例
+        const st = ScrollTrigger.create({
+            trigger: ".parallax_wrapper",
+            start: startPos,
+            end: endPos,
+            markers: SHOW_MARKERS,
+            scrub: 1,
+            onUpdate: self => {
+                progressValue.textContent = `${Math.round(self.progress * 100)}%`;
+            }
+        });
+
+        // 定義共用的ScrollTrigger配置
+        const commonScrollTriggerConfig = {
+            trigger: ".parallax_wrapper",
+            start: startPos,
+            end: endPos,
+            markers: SHOW_MARKERS,
+            scrub: 1
+        };
+
+        // 取得所有當前圖片元素
+        const parallaxWrapper = document.querySelector(".parallax_img-wrapper");
+        if (!parallaxWrapper) {
+            console.error('找不到圖片容器元素!');
+            return;
+        }
+
+        // 為所有現有圖片創建動畫
+        IMAGES_CONFIG.forEach((imageConfig, index) => {
+            if (!imageConfig.url || imageConfig.isBackground) {
+                return;  // 跳過沒有URL的圖片和背景圖
+            }
+
+            try {
+                // 取得對應的圖片元素
+                const imgElement = document.getElementById(`gsap-trigger-${imageConfig.id}`);
+
+                if (!imgElement) {
+                    console.log(`找不到圖片元素 #gsap-trigger-${imageConfig.id}，跳過動畫創建`);
+                    return;
+                }
+
+                // 檢查是否有動畫參數
+                if (!imageConfig.fromParams || !imageConfig.toParams ||
+                    imageConfig.fromParams.trim() === '{}' || imageConfig.toParams.trim() === '{}') {
+                    console.log(`圖片 ${imageConfig.name} 沒有設置動畫參數或參數為空，跳過動畫創建`);
+                    return;  // 如果沒有設置參數或參數為空對象，不創建動畫
+                }
+
+                // 嘗試解析動畫參數
+                let fromParams, toParams;
+                try {
+                    fromParams = eval(`(${imageConfig.fromParams})`);
+                    // 檢查是否為空對象
+                    if (Object.keys(fromParams).length === 0) {
+                        console.log(`圖片 ${imageConfig.name} 的From參數為空對象，跳過動畫創建`);
+                        return;
+                    }
+                } catch (e) {
+                    console.error(`解析From參數失敗 (${imageConfig.name}):`, e);
+                    return;  // 解析失敗時不創建動畫，而不是設置默認值
+                }
+
+                try {
+                    toParams = eval(`(${imageConfig.toParams})`);
+                    // 檢查是否為空對象
+                    if (Object.keys(toParams).length === 0) {
+                        console.log(`圖片 ${imageConfig.name} 的To參數為空對象，跳過動畫創建`);
+                        return;
+                    }
+                } catch (e) {
+                    console.error(`解析To參數失敗 (${imageConfig.name}):`, e);
+                    return;  // 解析失敗時不創建動畫，而不是設置默認值
+                }
+
+                // 創建GSAP動畫
+                gsap.fromTo(
+                    `#gsap-trigger-${imageConfig.id}`,
+                    fromParams,
+                    {
+                        ...toParams,
+                        scrollTrigger: commonScrollTriggerConfig,
+                    }
+                );
+
+                console.log(`已創建圖片動畫: ${imageConfig.name}`, { from: fromParams, to: toParams });
+            } catch (error) {
+                console.error(`創建圖片動畫失敗 (${imageConfig.name}):`, error);
+            }
+        });
+    }
+
+    // 更新背景圖URL的專用函數
+    function updateBackgroundImageUrl(url) {
+        // 更新配置中的背景圖URL
+        const bgImage = IMAGES_CONFIG.find(img => img.isBackground);
+        if (bgImage) {
+            bgImage.url = url;
+            saveImagesConfig();
+        }
+
+        // 更新DOM中的背景圖
+        const bgImageElement = document.querySelector(".parallax_img-wrapper .is-bg");
+        if (bgImageElement) {
+            const { src, srcset } = generateSrcSet(url);
+            bgImageElement.src = src;
+
+            if (srcset) {
+                bgImageElement.srcset = srcset;
+                bgImageElement.sizes = "(max-width: 800px) 800px, (max-width: 1200px) 1200px, 2000px";
+            }
+        }
+
+        console.log('背景圖URL已更新:', url);
+    }
+
+    // 導出配置函數
+    function exportConfig() {
+        // 生成唯一模組ID，用於避免多個模組衝突
+        const moduleId = 'parallax_' + Math.random().toString(36).substring(2, 10);
+
+        const config = {
+            moduleId: moduleId, // 添加唯一模組ID
+            scrollConfig: SCROLL_CONFIG,
+            imagesConfig: IMAGES_CONFIG.map(img => ({
+                ...img,
+                // 重新映射ID，確保不同模組的圖片ID不衝突
+                uniqueId: `${moduleId}_img_${img.id}`
+            })),
+            version: "1.0"
+        };
+
+        // 創建完整的配置字符串，包含 const config = 宣告部分
+        const configString = `const config = ${JSON.stringify(config, null, 2)};`;
+
+        // 創建一個臨時元素用於複製到剪貼板
+        const textarea = document.createElement('textarea');
+        textarea.value = configString;
+        document.body.appendChild(textarea);
+        textarea.select();
+
+        try {
+            // 嘗試複製到剪貼板
+            document.execCommand('copy');
+
+            // 顯示對話框
+            const dialog = document.getElementById('export-dialog');
+            const closeButton = dialog.querySelector('.export-dialog__close-button');
+            const downloadButton = dialog.querySelector('.export-dialog__download-button');
+
+            dialog.style.display = 'block';
+
+            // 為下載按鈕添加事件
+            downloadButton.addEventListener('click', function () {
+                const blob = new Blob([configString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'parallax_config.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            });
+
+            // 為關閉按鈕添加事件
+            closeButton.addEventListener('click', function () {
+                dialog.style.display = 'none';
+            });
+        } catch (err) {
+            console.error('複製到剪貼板失敗:', err);
+            alert('複製到剪貼板失敗，請手動複製。');
+        } finally {
+            // 移除臨時元素
+            document.body.removeChild(textarea);
+        }
+    }
+
+    // 添加面板切換功能
+    toggleButton.addEventListener('click', function () {
+        controlPanel.classList.toggle('hidden');
+        toggleButton.classList.toggle('hidden');
+    });
+
+    // 添加視窗尺寸變化監聽器，當視窗大小改變時重新載入適合的圖片
+    window.addEventListener('resize', debounce(function () {
+        loadAllImages();
+    }, 250));
+
+    // 增加防抖動函數避免頻繁觸發resize事件
+    function debounce(func, wait) {
+        let timeout;
+        return function () {
+            const context = this;
+            const args = arguments;
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                func.apply(context, args);
+            }, wait);
+        };
+    }
+
+    // 啟動應用程序
+    init();
+</script>

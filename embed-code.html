@@ -1,0 +1,285 @@
+<body>
+    <!-- 這是毒梟A -->
+    <div class="parallax-module">
+        <!-- TODO: move <style> into other embed code -->
+        <style>
+            .parallax-module {
+                max-width: 730px;
+                margin: 0 auto;
+            }
+
+            .parallax-module img {
+                display: block;
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: relative;
+            }
+
+            .parallax-module .parallax-wrapper {
+                aspect-ratio: 4 / 5;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .parallax-module .parallax-img {
+                position: absolute;
+                top: 0;
+            }
+
+            .parallax-module .parallax-bg {
+                position: relative;
+                top: 0;
+                width: 100%;
+                height: 100%;
+            }
+        </style>
+
+        <div class="parallax-wrapper">
+            <!-- 圖片將在此動態生成 -->
+        </div>
+
+        <script type="module">
+            // TODO: 要改成載入 https://www.twreporter.org/ 開頭的網址
+            import { markCurrentModule, loadImages, createAnimations } from 'https://storage.googleapis.com/storytelling-storage.twreporter.org/files/parallax-gsap-helper-425Fivu-85nm.js';
+
+            // ===== 在下方粘貼從工具導出的JSON配置 =====
+            // === 開始：配置數據（請勿修改此行） ===
+            const config = {
+                moduleId: 'parallax_wgdfndz0',
+                scrollConfig: {
+                    startViewportPosition: 0.4,
+                    triggerStartPosition: 0.1,
+                    scrollDistance: 400,
+                },
+                imagesConfig: [
+                    {
+                        id: 0,
+                        name: '背景圖',
+                        url: 'https://www.twreporter.org/images/20250409184447-4ec8004f3e32d67fe5bf5028777d575c-desktop.png',
+                        isBackground: true,
+                        zIndex: 1,
+                        uniqueId: 'parallax_wgdfndz0_img_0',
+                    },
+                    {
+                        id: 1,
+                        name: '煙霧',
+                        url: 'https://www.twreporter.org/images/20250409184056-1a0014ac9d41865fca76ccc420c1383e-desktop.png',
+                        fromParams: '{\n  scale: 1.25,\n  transformOrigin: "50% bottom"\n}',
+                        toParams: '{\n  scale: 1,\n  transformOrigin: "50% bottom"\n}',
+                        zIndex: 2,
+                        uniqueId: 'parallax_wgdfndz0_img_1',
+                    },
+                    {
+                        id: 2,
+                        name: '手部',
+                        url: 'https://www.twreporter.org/images/20250409184322-70971186e62ef80444851b62fe85a75f-desktop.png',
+                        fromParams: '{\n  x: "5%",\n  transformOrigin: "75% 50%"\n}',
+                        toParams: '{\n  x: 0,\n  transformOrigin: "70% 50%"\n}',
+                        zIndex: 3,
+                        uniqueId: 'parallax_wgdfndz0_img_2',
+                    },
+                    {
+                        id: 3,
+                        name: '文字',
+                        url: 'https://www.twreporter.org/images/20250409184351-57c9c8821c301f1b6af70ae8ae020c2a-desktop.png',
+                        fromParams:
+                            '{\n  scale: 0.5,\n  opacity: 0,\n  transformOrigin: "10% 25%"\n}',
+                        toParams: '{\n  scale: 1,\n  opacity: 1\n}',
+                        zIndex: 4,
+                        uniqueId: 'parallax_wgdfndz0_img_3',
+                    },
+                    {
+                        id: 4,
+                        name: '外框',
+                        url: 'https://www.twreporter.org/images/20250414163932-4283d821f2a4b6d40b21a44e28022ecf-desktop.png',
+                        fromParams: '{}',
+                        toParams: '{}',
+                        zIndex: 5,
+                        uniqueId: 'parallax_wgdfndz0_img_4',
+                    },
+                    {
+                        id: 5,
+                        name: '圖說',
+                        url: 'https://www.twreporter.org/images/20250414170345-3857e69ad8d4dc169124bd3502a46978-desktop.png',
+                        fromParams: '{\nopacity: 0,\n}',
+                        toParams: '{\nopacity: 1,\n}',
+                        zIndex: 6,
+                        uniqueId: 'parallax_wgdfndz0_img_5',
+                    },
+                ],
+                version: '1.0',
+            };
+            // === 結束：配置數據（請勿修改此行） ===
+
+            // 從配置中提取設置
+            const moduleId =
+                config.moduleId || 'parallax_' + Math.random().toString(36).substring(2, 10);
+            const scrollConfig = config.scrollConfig;
+            const imagesConfig = config.imagesConfig;
+
+            // 標記當前處理的模組
+            const currentModule = markCurrentModule(document.currentScript, moduleId);
+            if (!currentModule) {
+                console.error(`[${moduleId}] 無法識別當前模組，中止初始化`);
+                // return; 
+            }
+
+            // 獲取parallax wrapper
+            const parallaxWrapper = currentModule.querySelector('.parallax-wrapper');
+
+            // 確保DOM元素存在
+            if (!parallaxWrapper) {
+                console.error(`[${moduleId}] 找不到視差容器!`);
+                // return;
+            }
+
+            // 添加唯一ID
+            parallaxWrapper.id = moduleId;
+
+            // 初始化模組
+            function init() {
+                // 設置初始化標記，防止重複初始化
+                if (currentModule.hasAttribute('data-initialized')) {
+                    console.log(`[${moduleId}] 模組已初始化，跳過`);
+                    // return;
+                }
+
+                loadImages(moduleId, parallaxWrapper, imagesConfig);
+
+                // 添加延遲，確保圖片有足夠時間載入
+                setTimeout(() => {
+                    createAnimations(moduleId, scrollConfig, imagesConfig, parallaxWrapper, currentModule);
+                    // 標記模組已初始化
+                    currentModule.setAttribute('data-initialized', 'true');
+                    console.log(`[${moduleId}] 視差滾動模組初始化完成`);
+                }, 100);
+            }
+
+            // 確保DOM已完全載入
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                // 如果DOM已經載入完成，立即初始化
+                // 添加短暫延遲，確保模組標記過程完成
+                setTimeout(init, 10);
+            }
+        </script>
+    </div>
+
+    <div class="parallax-module">
+
+        <div class="parallax-wrapper">
+            <!-- 圖片將在此動態生成 -->
+        </div>
+        <script type="module">
+            // TODO: 要改成載入 https://www.twreporter.org/ 開頭的網址
+            import { markCurrentModule, loadImages, createAnimations } from 'https://storage.googleapis.com/storytelling-storage.twreporter.org/files/parallax-gsap-helper-425Fivu-85nm.js';
+
+            // ===== 在下方粘貼從工具導出的JSON配置 =====
+            // === 開始：配置數據（請勿修改此行） ===
+            const config = {
+                "moduleId": "parallax_6mzavwhj",
+                "scrollConfig": {
+                    "startViewportPosition": 0.4,
+                    "triggerStartPosition": 0.1,
+                    "scrollDistance": 400
+                },
+                "imagesConfig": [
+                    {
+                        "id": 0,
+                        "name": "背景圖",
+                        "url": "https://www.twreporter.org/images/20250411215933-40cbb8047bfee693a05373ee0ef1bd37-desktop.png",
+                        "isBackground": true,
+                        "zIndex": 5,
+                        "uniqueId": "parallax_6mzavwhj_img_0"
+                    },
+                    {
+                        "id": 1,
+                        "name": "證件",
+                        "url": "https://www.twreporter.org/images/20250411220113-f3df7d3ffd29474e485dc7c3c855482c-desktop.png",
+                        "fromParams": "{\nopacity: 0,  \ny:\"20%\",\nscale: 0.8,\n  transformOrigin: \"50% top\"\n}",
+                        "toParams": "{\nopacity: 1,  \ny:\"0%\",\n  scale: 1,\n  transformOrigin: \"50% top\"\n}",
+                        "zIndex": 2,
+                        "uniqueId": "parallax_6mzavwhj_img_1"
+                    },
+                    {
+                        "id": 2,
+                        "name": "毒品",
+                        "url": "https://www.twreporter.org/images/20250411220412-5e749ac2fc90b7ca769bd48c52d249e7-desktop.png",
+                        "fromParams": "{\n  y: \"10%\",\n}",
+                        "toParams": "{\ny:\"0%\",\n}",
+                        "zIndex": 3,
+                        "uniqueId": "parallax_6mzavwhj_img_2"
+                    },
+                    {
+                        "id": 5,
+                        "name": "圖說",
+                        "url": "https://www.twreporter.org/images/20250414171612-401ab96c120ee5bf673ce82bf3384a50-desktop.png",
+                        "fromParams": "{\nopacity: 0,\n}",
+                        "toParams": "{\nopacity: 1,\n}",
+                        "zIndex": 6,
+                        "uniqueId": "parallax_6mzavwhj_img_5"
+                    }
+                ],
+                "version": "1.0"
+            };
+            // === 結束：配置數據（請勿修改此行） ===
+
+            // 從配置中提取設置
+            const moduleId = config.moduleId || 'parallax_' + Math.random().toString(36).substring(2, 10);
+            const scrollConfig = config.scrollConfig;
+            const imagesConfig = config.imagesConfig;
+
+            // 標記當前處理的模組
+            const currentModule = markCurrentModule(document.currentScript, moduleId);
+            if (!currentModule) {
+                console.error(`[${moduleId}] 無法識別當前模組，中止初始化`);
+                // return; // 終止執行
+            }
+
+            // 獲取parallax wrapper
+            const parallaxWrapper = currentModule.querySelector('.parallax-wrapper');
+
+            // 確保DOM元素存在
+            if (!parallaxWrapper) {
+                console.error(`[${moduleId}] 找不到視差容器!`);
+                // return;
+            }
+
+            // 添加唯一ID
+            parallaxWrapper.id = moduleId;
+
+            // 初始化模組
+            function init() {
+                // 設置初始化標記，防止重複初始化
+                if (currentModule.hasAttribute('data-initialized')) {
+                    console.log(`[${moduleId}] 模組已初始化，跳過`);
+                    // return;
+                }
+
+                loadImages(moduleId, parallaxWrapper, imagesConfig);
+
+                // 添加延遲，確保圖片有足夠時間載入
+                setTimeout(() => {
+                    createAnimations(moduleId, scrollConfig, imagesConfig, parallaxWrapper, currentModule);
+
+                    // 標記模組已初始化
+                    currentModule.setAttribute('data-initialized', 'true');
+                    console.log(`[${moduleId}] 視差滾動模組初始化完成`);
+                }, 100);
+            }
+
+            // 確保DOM已完全載入
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', init);
+            } else {
+                // 如果DOM已經載入完成，立即初始化
+                // 添加短暫延遲，確保模組標記過程完成
+                setTimeout(init, 10);
+            }
+
+        </script>
+    </div>
+</body>
+<!-- 這是毒梟A -->
